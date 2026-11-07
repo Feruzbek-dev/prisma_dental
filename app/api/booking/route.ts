@@ -28,8 +28,9 @@ export async function POST(req: Request) {
   const note = clean(body.note, 600);
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) {
+  // Bir nechta qabul qiluvchi: TELEGRAM_CHAT_ID=111,222
+  const chatIds = (process.env.TELEGRAM_CHAT_ID || "").split(",").map((s) => s.trim()).filter(Boolean);
+  if (!token || chatIds.length === 0) {
     console.error("[booking] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID sozlanmagan");
     return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 });
   }
@@ -43,14 +44,16 @@ export async function POST(req: Request) {
     note ? `Izoh: ${note}` : null,
   ].filter(Boolean).join("\n");
 
-  const tg = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text }),
-  });
-  if (!tg.ok) {
-    console.error("[booking] Telegram xatosi", tg.status, await tg.text());
-    return NextResponse.json({ ok: false }, { status: 502 });
-  }
+  // Hech bo'lmasa bitta chatga yetib borsa — so'rov qabul qilingan hisoblanadi.
+  const results = await Promise.all(chatIds.map(async (chatId) => {
+    const tg = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    }).catch(() => null);
+    if (!tg?.ok) console.error("[booking] Telegram xatosi", chatId, tg?.status, await tg?.text());
+    return !!tg?.ok;
+  }));
+  if (!results.some(Boolean)) return NextResponse.json({ ok: false }, { status: 502 });
   return NextResponse.json({ ok: true });
 }
