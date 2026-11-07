@@ -7,6 +7,12 @@ const MIN_TIME = 2600; // intro animatsiya to'liq ko'rinishi uchun (ms)
 const MAX_TIME = 10000; // sayt sekin bo'lsa ham shundan keyin yopiladi
 export const PRELOADER_KEY = "pd-intro-seen";
 
+// Hero animatsiyasi preloader yopila boshlaganda ishga tushadi (components/Hero.tsx).
+function signalIntro() {
+  document.documentElement.classList.add("pl-done");
+  window.dispatchEvent(new Event("pd:intro"));
+}
+
 /**
  * Logo animatsiyasi. Sessiyada faqat birinchi kirishda ko'rsatiladi —
  * keyingi sahifa ochilishlarida darhol yashiriladi (Core Web Vitals / LCP uchun).
@@ -21,6 +27,7 @@ export default function Preloader() {
     const html = document.documentElement;
     if (html.classList.contains("pl-skip")) {
       setGone(true);
+      signalIntro();
       return;
     }
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -30,6 +37,7 @@ export default function Preloader() {
       closed.current = true;
       setDone(true);
       html.classList.remove("pl-lock");
+      signalIntro();
       try { sessionStorage.setItem(PRELOADER_KEY, "1"); } catch {}
       setTimeout(() => setGone(true), 700);
     };

@@ -92,7 +92,11 @@ p{margin:0}
 
 /* Header */
 .site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.nav{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:76px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:76px;transition:min-height .3s cubic-bezier(.2,.8,.2,1)}
+.site-header{transition:box-shadow .3s ease}
+html[data-scrolled] .site-header{box-shadow:0 8px 30px rgba(11,38,84,.08)}
+html[data-scrolled] .nav{min-height:62px}
+@media (prefers-reduced-motion:reduce){.nav,.site-header{transition:none}}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0}
 .brand .mark{width:40px;height:auto;fill:var(--blue)}
 .brand .word{width:108px;height:auto;fill:var(--blue)}
@@ -109,14 +113,17 @@ p{margin:0}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,5vw,72px);align-items:center}
 .hero-copy{display:flex;flex-direction:column;gap:28px;min-width:0}
 .hero h1{font-size:clamp(40px,6vw,76px);line-height:1.02;font-weight:600}
-.hero h1 em{font-style:normal;color:var(--blue)}
+.hero h1 em,.h1-accent{font-style:normal;color:var(--blue)}
+.h1-line{display:block;overflow:hidden;padding-bottom:.1em;margin-bottom:-.1em}
+.h1-line > span{display:inline-block;will-change:transform}
 .hero-lead{font-size:clamp(17px,1.6vw,20px);color:var(--muted);max-width:46ch}
 .hero-actions{display:flex;flex-wrap:wrap;gap:12px}
 .hero-facts{display:flex;flex-wrap:wrap;gap:12px 32px;padding-top:24px;border-top:1px solid var(--line);font-size:15px;color:var(--muted)}
 .hero-facts strong{display:block;font-size:22px;color:var(--blue-ink);font-weight:600}
 .hero-visual{position:relative;aspect-ratio:4/5;max-width:100%;min-width:0}
 .hero-photo{position:absolute;inset:0;border-radius:32px;background:var(--ice);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;padding:40px;text-align:center;color:var(--muted);font-size:15px}
-.hero-rosette{position:absolute;width:62%;right:-14%;top:-10%;fill:var(--blue);opacity:.08;animation:spin 90s linear infinite;pointer-events:none}
+.hero-rosette-wrap{position:absolute;width:62%;right:-14%;top:-10%;pointer-events:none}
+.hero-rosette{display:block;width:100%;height:auto;fill:var(--blue);opacity:.08;animation:spin 90s linear infinite}
 .hero-badge{position:absolute;left:-20px;bottom:36px;background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:16px 20px;display:flex;gap:14px;align-items:center;box-shadow:0 18px 40px rgba(11,38,84,.10)}
 .hero-badge .dot{width:42px;height:42px;border-radius:50%;background:var(--ice);display:grid;place-items:center;flex-shrink:0}
 .hero-badge b{display:block;color:var(--blue-ink);font-size:15px}
@@ -190,12 +197,14 @@ p{margin:0}
 /* FAQ */
 .faq{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(32px,6vw,80px);align-items:start}
 .faq-list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
-.faq details{border-bottom:1px solid var(--line)}
-.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:24px;padding:22px 0;font-weight:600;font-size:18px;color:var(--blue-ink)}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";font-size:26px;line-height:1;color:var(--blue);transition:transform .2s}
-.faq details[open] summary::after{transform:rotate(45deg)}
-.faq details p{padding:0 0 22px;color:var(--muted);max-width:62ch}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-item h3{margin:0;font-size:inherit;letter-spacing:0}
+.faq-item button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:22px 0;font-family:var(--font-body);font-weight:600;font-size:18px;line-height:1.4;color:var(--blue-ink)}
+.faq-item button:hover{color:var(--blue)}
+.faq-item button:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:8px}
+.faq-sign{font-size:26px;line-height:1;color:var(--blue);display:inline-block;flex-shrink:0}
+.faq-answer{overflow:hidden}
+.faq-answer p{padding:0 0 22px;color:var(--muted);max-width:62ch}
 @media (max-width:860px){.faq{grid-template-columns:1fr}}
 
 /* Booking */
@@ -241,17 +250,21 @@ p{margin:0}
 .chip span{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid transparent;font-size:15px;font-weight:500;color:var(--text);background:#F1F5FB;transition:all .15s}
 .chip:hover span{background:#E3ECF8}
 .chip input:checked + span{background:var(--blue);border-color:var(--blue);color:#fff}
-.chip input:focus-visible + span,.segment input:focus-visible + span{outline:3px solid var(--blue);outline-offset:2px}
+.chip input:focus-visible + span,.segment input:focus-visible ~ span{outline:3px solid var(--blue);outline-offset:2px}
 .segment{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#F1F5FB;border-radius:14px;padding:4px;gap:4px}
 .segment label{cursor:pointer;position:relative}
 .segment span{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:11px;font-size:15px;font-weight:500;color:var(--muted);text-align:center;padding:0 6px;transition:all .15s}
-.segment input:checked + span{background:#fff;color:var(--blue-ink);font-weight:600;box-shadow:0 2px 8px rgba(11,38,84,.10)}
+.segment span{position:relative;z-index:1}
+.segment input:checked ~ span{color:var(--blue-ink);font-weight:600}
+.segment-pill{position:absolute;inset:0;border-radius:11px;background:#fff;box-shadow:0 2px 8px rgba(11,38,84,.10)}
 .btn-submit{min-height:58px;font-size:17px;margin-top:4px}
 .btn-submit svg{transition:transform .2s}
 .btn-submit:hover svg{transform:translateX(3px)}
 .form-note{display:flex;align-items:flex-start;gap:8px;font-size:14px;line-height:1.5;color:var(--muted)}
 .form-note svg{flex-shrink:0;margin-top:3px}
-.form-ok{background:var(--ice);border-radius:14px;padding:14px 16px;color:var(--blue-ink);font-size:15px}
+.form-ok{display:flex;gap:12px;align-items:flex-start;background:var(--ice);border-radius:14px;padding:14px 16px;color:var(--blue-ink);font-size:15px}
+.form-ok.is-error{background:#FDEFEF;color:#8A1C1C}
+.form-ok-check{flex-shrink:0;color:var(--blue);margin-top:1px}
 @media (max-width:900px){.booking{grid-template-columns:1fr}}
 @media (max-width:440px){.booking{border-radius:28px;padding:16px}.form{padding:26px 22px}.form h3{font-size:22px}.call-card strong{font-size:19px}.segment span{font-size:13px;padding:0 2px}}
 @media (prefers-reduced-motion:reduce){.booking-rosette{animation:none}}

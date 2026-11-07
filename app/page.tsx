@@ -1,5 +1,7 @@
 import Preloader from "@/components/Preloader";
-import { Booking, Digital, Doctor, Faq, Footer, Header, Hero, Reviews, Services, Trust } from "@/components/Sections";
+import Hero from "@/components/Hero";
+import ScrollState from "@/components/ScrollState";
+import { Booking, Digital, Doctor, Faq, Footer, Header, Reviews, Services, Trust } from "@/components/Sections";
 import { SITE_URL, clinic, doctor, faq, services } from "@/lib/site";
 
 // Google uchun tuzilgan ma'lumot (schema.org): klinika, shifokor, xizmatlar, FAQ.
@@ -70,6 +72,7 @@ export default function Home() {
     <>
       <JsonLd />
       <Preloader />
+      <ScrollState />
       <Header />
       <main id="top">
         <Hero />

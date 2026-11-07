@@ -2,6 +2,7 @@ import { clinic, doctor, faq, nav, reviews, services, steps } from "@/lib/site";
 import { Icon, Stars } from "./Icon";
 import { Brand, Mark } from "./Logo";
 import BookingForm from "./BookingForm";
+import FaqList from "./FaqList";
 
 const BLUE = "#0250B5";
 
@@ -19,38 +20,6 @@ export function Header() {
         </div>
       </div>
     </header>
-  );
-}
-
-export function Hero() {
-  return (
-    <section className="hero" aria-labelledby="hero-title">
-      <div className="wrap hero-grid">
-        <div className="hero-copy">
-          <p className="eyebrow">{clinic.slogan}</p>
-          <h1 id="hero-title">Aniq tashxis. Og‘riqsiz davolash. <em>Ishonchli tabassum.</em></h1>
-          <p className="hero-lead">Terapiya, ortopediya, jarrohlik, implantatsiya va ortodontiya — barchasi bir klinikada. Har bir qadamni oldindan ko‘rasiz va narxni oldindan bilasiz.</p>
-          <div className="hero-actions">
-            <a className="btn btn-primary" href="#aloqa">Qabulga yozilish</a>
-            <a className="btn btn-ghost" href="#xizmatlar">Xizmatlar va narxlar</a>
-          </div>
-          <dl className="hero-facts">
-            <div><dt>10 yil</dt><dd>amaliy tajriba</dd></div>
-            <div><dt>1 000+</dt><dd>bemor</dd></div>
-            <div><dt>5</dt><dd>yo‘nalish bir joyda</dd></div>
-          </dl>
-        </div>
-        <div className="hero-visual">
-          {/* Haqiqiy surat qo'yilganda: <Image src="/hero.jpg" alt="..." fill priority sizes="(max-width:860px) 100vw, 45vw" /> */}
-          <div className="hero-photo">[Surat: shifokor bemor bilan — yorug‘ kabinet, tabiiy yorug‘lik]</div>
-          <Mark className="hero-rosette" />
-          <div className="hero-badge">
-            <div className="dot"><Icon name="clock" size={22} color={BLUE} /></div>
-            <div><b>Qabul vaqti</b><span>{clinic.hours.days}, [{clinic.hours.open}–{clinic.hours.close}]</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -185,14 +154,7 @@ export function Faq() {
           <p className="eyebrow">Savol-javob</p>
           <h2 id="faq-title" className="faq-title">Ko‘p beriladigan savollar</h2>
         </div>
-        <div className="faq-list">
-          {faq.map((f, i) => (
-            <details key={f.q} open={i === 0}>
-              <summary>{f.q}</summary>
-              <p>{f.a}</p>
-            </details>
-          ))}
-        </div>
+        <FaqList items={faq} />
       </div>
     </section>
   );

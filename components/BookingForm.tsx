@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion, MotionConfig } from "motion/react";
 import { bookingServices, bookingTimes, clinic } from "@/lib/site";
 import { Icon } from "./Icon";
 
@@ -8,6 +9,7 @@ type Status = { kind: "idle" | "sending" | "ok" | "error"; text?: string };
 
 export default function BookingForm() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const [time, setTime] = useState(bookingTimes[0]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,6 +31,7 @@ export default function BookingForm() {
       if (!res.ok) throw new Error(String(res.status));
       setStatus({ kind: "ok", text: `Rahmat, ${name}! So‘rovingiz qabul qilindi — tez orada qo‘ng‘iroq qilamiz.` });
       form.reset();
+      setTime(bookingTimes[0]);
     } catch {
       setStatus({ kind: "error", text: `So‘rovni yuborib bo‘lmadi. Iltimos, ${clinic.phoneDisplay} raqamiga qo‘ng‘iroq qiling.` });
     }
@@ -36,6 +39,7 @@ export default function BookingForm() {
 
   return (
     // Karta dizayni tashqi div'da: ba'zi brauzer kengaytmalari <form> padding/radius'ini !important bilan nolga tushiradi.
+    <MotionConfig reducedMotion="user">
     <div className="form">
     <form className="form-body" onSubmit={onSubmit} noValidate>
       <div className="form-head">
@@ -68,8 +72,12 @@ export default function BookingForm() {
       <fieldset className="field">
         <legend>Qulay vaqt</legend>
         <div className="segment">
-          {bookingTimes.map((t, i) => (
-            <label key={t}><input type="radio" name="time" value={t} defaultChecked={i === 0} /><span>{t}</span></label>
+          {bookingTimes.map((t) => (
+            <label key={t}>
+              <input type="radio" name="time" value={t} checked={time === t} onChange={() => setTime(t)} />
+              {time === t && <motion.i className="segment-pill" layoutId="segment-pill" transition={{ type: "spring", stiffness: 500, damping: 38 }} />}
+              <span>{t}</span>
+            </label>
           ))}
         </div>
       </fieldset>
@@ -82,9 +90,31 @@ export default function BookingForm() {
       <button className="btn btn-primary btn-submit" type="submit" disabled={status.kind === "sending"}>
         {status.kind === "sending" ? "Yuborilmoqda…" : "Qabulga yozilish"} <Icon name="arrow" size={18} strokeWidth={2} />
       </button>
-      {status.text && <p className="form-ok" role="status">{status.text}</p>}
+      <div role="status" aria-live="polite">
+        <AnimatePresence mode="wait" initial={false}>
+          {status.text && (
+            <motion.p
+              key={status.kind + status.text}
+              className={`form-ok${status.kind === "error" ? " is-error" : ""}`}
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            >
+              {status.kind === "ok" && (
+                <svg className="form-ok-check" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                  <motion.circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5 }} />
+                  <motion.path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.35, delay: 0.4 }} />
+                </svg>
+              )}
+              <span>{status.text}</span>
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
       <p className="form-note"><Icon name="lock" size={14} strokeWidth={2} />Ma’lumotlaringiz faqat qabulni belgilash uchun ishlatiladi.</p>
     </form>
     </div>
+    </MotionConfig>
   );
 }
