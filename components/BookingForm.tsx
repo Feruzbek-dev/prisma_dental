@@ -35,7 +35,9 @@ export default function BookingForm() {
   }
 
   return (
-    <form className="form" onSubmit={onSubmit} noValidate>
+    // Karta dizayni tashqi div'da: ba'zi brauzer kengaytmalari <form> padding/radius'ini !important bilan nolga tushiradi.
+    <div className="form">
+    <form className="form-body" onSubmit={onSubmit} noValidate>
       <div className="form-head">
         <h3>Onlayn yozilish</h3>
         <span className="form-time">≈ 1 daqiqa</span>
@@ -83,5 +85,6 @@ export default function BookingForm() {
       {status.text && <p className="form-ok" role="status">{status.text}</p>}
       <p className="form-note"><Icon name="lock" size={14} strokeWidth={2} />Ma’lumotlaringiz faqat qabulni belgilash uchun ishlatiladi.</p>
     </form>
+    </div>
   );
 }
