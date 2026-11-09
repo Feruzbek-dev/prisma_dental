@@ -48,22 +48,68 @@ export const doctor = {
   ],
 };
 
-export type Service = { slug: string; icon: IconName; title: string; short: string; text: string; items: string[]; price: string };
 export type IconName = "heart" | "implant" | "sparkle" | "crown" | "braces" | "drop";
 
+// Xizmatlar bo'limidagi tablar (dentalconcept.uz uslubida: tab → narx kartalari).
+export const serviceTabs = [
+  { id: "davolash", label: "Davolash" },
+  { id: "implantatsiya", label: "Implantatsiya" },
+  { id: "ortodontiya", label: "Ortodontiya" },
+  { id: "estetika", label: "Estetika" },
+] as const;
+export type TabId = (typeof serviceTabs)[number]["id"];
+
+export type Service = {
+  slug: string; tab: TabId; icon: IconName;
+  name: string;   // kartadagi katta yozuv (KATTA HARF)
+  title: string;  // to'liq nomi — JSON-LD va kartada
+  short: string;  // forma uchun qisqa nom
+  meta: string;
+  text: string;   // qisqa tavsif (JSON-LD)
+  items: string[]; // "Nima kiradi"
+  fit: string;     // "Kimga mos"
+  price: string; unit?: string;
+  badge?: string; featured?: boolean;
+};
+
 export const services: Service[] = [
-  { slug: "tozalash", icon: "drop", title: "Tishlarni professional tozalash", short: "Tozalash", text: "Tish toshi va karashni tozalaymiz, milklarni sog‘lomlashtiramiz. Yiliga ikki marta tavsiya qilinadi.", items: ["Tish toshini olib tashlash", "Karash va dog‘larni tozalash, polirovka"], price: "400 000 – 800 000 so‘m" },
-  { slug: "karies", icon: "heart", title: "Kariyes va uning asoratlarini davolash", short: "Kariyes davolash", text: "Og‘riq, qora dog‘ yoki tushib ketgan plomba — tishni imkon qadar saqlab, og‘riqsiz davolaymiz.", items: ["Kariyes va plomba", "Ildiz kanallarini davolash"], price: "400 000 – 1 000 000 so‘m" },
-  { slug: "implantatsiya", icon: "implant", title: "Implantatsiya", short: "Implantatsiya", text: "Yo‘qolgan tish o‘rniga tabiiy ko‘rinishdagi, uzoq xizmat qiladigan implant. Implantni jarroh-implantolog o‘zi o‘rnatadi.", items: ["Bitta tishdan to‘liq qatorgacha", "Bosqichma-bosqich kuzatuv"], price: "2 – 8 mln so‘m" },
-  { slug: "ortodontiya", icon: "braces", title: "Breket va elaynerlar", short: "Breket / elayner", text: "Qiyshiq tishlar va noto‘g‘ri tishlov breket tizimlari yoki shaffof elaynerlar bilan to‘g‘rilanadi.", items: ["Breket tizimlari", "Shaffof elaynerlar"], price: "3 – 20 mln so‘m" },
-  { slug: "protezlash", icon: "crown", title: "Vinirlar va tish protezlari", short: "Vinir / protez", text: "Singan, shakli yoki rangi o‘zgargan tishlarni vinir, koronka va protezlar bilan tiklaymiz. Rang tabiiy tishga moslanadi.", items: ["Vinirlar", "Koronka va protezlar"], price: "700 000 – 3 000 000 so‘m" },
-  { slug: "reabilitatsiya", icon: "sparkle", title: "Tish qatorini to‘liq tiklash", short: "To‘liq tiklash", text: "Ko‘p tishlar yo‘qolgan yoki shikastlangan holatda — chaynash funksiyasini va tabassum estetikasini birga tiklaymiz.", items: ["Funksional reabilitatsiya", "Estetik reabilitatsiya"], price: "Ko‘rikdan so‘ng individual" },
+  { slug: "tozalash", tab: "davolash", icon: "drop", name: "Gigiyena", title: "Tishlarni professional tozalash", short: "Tozalash", meta: "Yiliga ikki marta tavsiya qilinadi",
+    text: "Tish toshi va karashni tozalaymiz, milklarni sog‘lomlashtiramiz. Yiliga ikki marta tavsiya qilinadi.",
+    items: ["Tish toshini olib tashlash", "Karash va dog‘larni tozalash", "Polirovka", "Uyda parvarish bo‘yicha ko‘rsatma"],
+    fit: "Milki qonaydigan, tishida tosh yoki karash bo‘lgan va profilaktika istagan bemorlarga.", price: "400 000 – 800 000", unit: "so‘m" },
+  { slug: "karies", tab: "davolash", icon: "heart", name: "Davolash", title: "Kariyes va uning asoratlarini davolash", short: "Kariyes davolash", meta: "Og‘riqsiz · tishni imkon qadar saqlab",
+    text: "Og‘riq, qora dog‘ yoki tushib ketgan plomba — tishni imkon qadar saqlab, og‘riqsiz davolaymiz.",
+    items: ["Mahalliy og‘riqsizlantirish", "Kariyesni davolash va plomba", "Ildiz kanallarini davolash", "Tishlashni nazorat qilish"],
+    fit: "Tishi og‘riyotgan, qora dog‘ paydo bo‘lgan yoki plombasi tushib ketgan bemorlarga.", price: "400 000 – 1 000 000", unit: "so‘m", badge: "Ommabop", featured: true },
+  { slug: "implantatsiya", tab: "implantatsiya", icon: "implant", name: "Implant", title: "Implantatsiya", short: "Implantatsiya", meta: "Bitta tishdan to‘liq qatorgacha",
+    text: "Yo‘qolgan tish o‘rniga tabiiy ko‘rinishdagi, uzoq xizmat qiladigan implant. Implantni jarroh-implantolog o‘zi o‘rnatadi.",
+    items: ["3D tomografiya bo‘yicha rejalashtirish", "Implantni jarroh-implantolog o‘zi o‘rnatadi", "Bosqichma-bosqich kuzatuv", "Nazorat ko‘riklari"],
+    fit: "Yo‘qolgan tishni ishonchli va uzoq muddatli tiklashni istagan bemorlarga.", price: "2 – 8 mln", unit: "so‘m", badge: "Ommabop", featured: true },
+  { slug: "reabilitatsiya", tab: "implantatsiya", icon: "sparkle", name: "To‘liq tiklash", title: "Tish qatorini to‘liq tiklash", short: "To‘liq tiklash", meta: "Funksional va estetik reabilitatsiya",
+    text: "Ko‘p tishlar yo‘qolgan yoki shikastlangan holatda — chaynash funksiyasini va tabassum estetikasini birga tiklaymiz.",
+    items: ["To‘liq diagnostika va 3D reja", "Funksional reabilitatsiya", "Estetik reabilitatsiya", "Bosqichma-bosqich kuzatuv"],
+    fit: "Ko‘p tishi yo‘qolgan yoki shikastlangan, chaynash va tabassumni birga tiklamoqchi bo‘lgan bemorlarga.", price: "Ko‘rikdan so‘ng individual" },
+  { slug: "ortodontiya", tab: "ortodontiya", icon: "braces", name: "Breket / elayner", title: "Breket va elaynerlar", short: "Breket / elayner", meta: "Breket tizimlari yoki shaffof elaynerlar",
+    text: "Qiyshiq tishlar va noto‘g‘ri tishlov breket tizimlari yoki shaffof elaynerlar bilan to‘g‘rilanadi.",
+    items: ["Raqamli skaner va davolash rejasi", "Breket tizimlari", "Shaffof elaynerlar", "Rejadagi nazorat ko‘riklari"],
+    fit: "Tishlari qiyshiq, orasida bo‘shliq bor yoki tishlovi noto‘g‘ri bo‘lgan bemorlarga.", price: "3 – 20 mln", unit: "so‘m", featured: true },
+  { slug: "protezlash", tab: "estetika", icon: "crown", name: "Vinir / protez", title: "Vinirlar va tish protezlari", short: "Vinir / protez", meta: "Rang tabiiy tishga moslanadi",
+    text: "Singan, shakli yoki rangi o‘zgargan tishlarni vinir, koronka va protezlar bilan tiklaymiz. Rang tabiiy tishga moslanadi.",
+    items: ["Tabassum dizayni va rangni tanlash", "Vinirlar", "Koronka va protezlar", "Fiksatsiya va tishlashni nazorat qilish"],
+    fit: "Singan, shakli yoki rangi o‘zgargan tishlarini chiroyli tiklamoqchi bo‘lgan bemorlarga.", price: "700 000 – 3 000 000", unit: "so‘m", featured: true },
 ];
 
 export const steps = [
   { n: "01 — Tashxis", title: "3D tomografiya", text: "Jag‘ va tishlarni barcha tomondan ko‘ramiz. Oddiy rentgenda ko‘rinmaydigan muammolar ham aniqlanadi.", tag: "[KT apparati modeli]" },
   { n: "02 — Rejalashtirish", title: "Raqamli skaner", text: "Noqulay qolip massasi o‘rniga tishlar bir necha daqiqada skanerlanadi. Reja ekranda birga ko‘rib chiqiladi.", tag: "[Intraoral skaner modeli]" },
   { n: "03 — Davolash", title: "Aniq bajarish", text: "Implant, koronka va vinirlar raqamli reja bo‘yicha tayyorlanadi — kamroq tashrif, aniqroq natija.", tag: "[Uskuna / laboratoriya]" },
+];
+
+// Oldin / keyin natijalar. Rasm qo'yilganda before/after ga "/cases/1-oldin.jpg" kabi yo'l yozing.
+export type Case = { title: string; before?: string; after?: string };
+export const cases: Case[] = [
+  { title: "Implantatsiya va koronka" },
+  { title: "Vinirlar — tabassum dizayni" },
 ];
 
 // Faqat haqiqiy sharhlarni qo'ying (Google Maps, Instagram, Telegram).
@@ -81,9 +127,11 @@ export const faq = [
 ];
 
 export const nav = [
+  { href: "#klinika", label: "Biz haqimizda" },
   { href: "#xizmatlar", label: "Xizmatlar" },
   { href: "#texnologiya", label: "Texnologiya" },
-  { href: "#shifokor", label: "Shifokor" },
+  { href: "#natijalar", label: "Natijalar" },
+  { href: "#shifokor", label: "Jamoa" },
   { href: "#sharhlar", label: "Sharhlar" },
   { href: "#savollar", label: "Savollar" },
   { href: "#aloqa", label: "Aloqa" },

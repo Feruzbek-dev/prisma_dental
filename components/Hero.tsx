@@ -6,8 +6,7 @@ import { clinic } from "@/lib/site";
 import { Icon } from "./Icon";
 import { Mark } from "./Logo";
 
-const BLUE = "#0250B5";
-const EASE = [0.2, 0.8, 0.2, 1] as const; // preloader harflari bilan bir xil egri
+const EASE = [0.22, 0.61, 0.36, 1] as const;
 
 // Preloader yopila boshlaganini kutadi (yoki sessiyada u o'tkazib yuborilgan bo'lsa — darhol).
 function useIntro() {
@@ -22,17 +21,15 @@ function useIntro() {
 }
 
 const rise: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  shown: (d: number) => ({ opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE, delay: d } }),
+  hidden: { opacity: 0, y: 22 },
+  shown: (d: number) => ({ opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE, delay: d } }),
 };
 
-// Sarlavha qatorlari niqob ichidan ko'tariladi — preloaderdagi "PRISMA" harflari kabi.
+// Sarlavha qatorlari niqob ichidan ko'tariladi.
 const line: Variants = {
-  hidden: { y: "105%" },
-  shown: (i: number) => ({ y: 0, transition: { duration: 0.9, ease: EASE, delay: 0.05 + i * 0.12 } }),
+  hidden: { y: "110%", opacity: 0 },
+  shown: (i: number) => ({ y: 0, opacity: 1, transition: { duration: 1, ease: EASE, delay: 0.2 + i * 0.17 } }),
 };
-
-const H1_LINES = ["Aniq tashxis.", "Og‘riqsiz davolash.", "Ishonchli tabassum."];
 
 function CountUp({ to, run, suffix = "" }: { to: number; run: boolean; suffix?: string }) {
   const [n, setN] = useState(to);
@@ -40,10 +37,10 @@ function CountUp({ to, run, suffix = "" }: { to: number; run: boolean; suffix?: 
     if (!run) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return setN(to);
     setN(0);
-    const c = animate(0, to, { duration: 1.6, ease: [0.16, 1, 0.3, 1], delay: 0.6, onUpdate: (v) => setN(Math.round(v)) });
+    const c = animate(0, to, { duration: 1.6, ease: [0.16, 1, 0.3, 1], delay: 0.9, onUpdate: (v) => setN(Math.round(v)) });
     return () => c.stop();
   }, [run, to]);
-  return <>{n.toLocaleString("ru-RU").replace(/ /g, " ")}{suffix}</>;
+  return <>{n.toLocaleString("ru-RU").replace(/\s/g, " ")}{suffix}</>;
 }
 
 export default function Hero() {
@@ -53,60 +50,56 @@ export default function Hero() {
   return (
     <MotionConfig reducedMotion="user">
       <section className="hero" aria-labelledby="hero-title">
+        <div className="hero-atmo" aria-hidden="true">
+          <div className="hero-grid-lines" />
+          <div className="orb orb-1" />
+          <div className="orb orb-2" />
+          <div className="orb orb-3" />
+        </div>
+        {/* Logodagi rozetka — fonda sekin aylanadi */}
+        <motion.div
+          className="hero-rosette-wrap" aria-hidden="true"
+          initial={{ opacity: 0, scale: 1.4, rotate: -90 }}
+          animate={ready ? { opacity: 1, scale: 1, rotate: 0 } : undefined}
+          transition={{ duration: 1.8, ease: EASE }}
+        >
+          <Mark className="hero-rosette" />
+        </motion.div>
+        <Mark className="hero-rosette small" />
+
         <div className="wrap hero-grid">
           <motion.div className="hero-copy" initial="hidden" animate={state}>
-            <motion.p className="eyebrow" variants={rise} custom={0}>{clinic.slogan}</motion.p>
+            <motion.p className="eyebrow" variants={rise} custom={0.1}><span className="facet" aria-hidden="true" />Terapiya · Implantatsiya · Ortodontiya · Raqamli stomatologiya</motion.p>
             <h1 id="hero-title">
-              {H1_LINES.map((t, i) => (
-                <span className="h1-line" key={t}>
-                  <motion.span className={i === 2 ? "h1-accent" : undefined} variants={line} custom={i}>{t}</motion.span>
-                </span>
-              ))}
+              <span className="h1-line"><motion.span variants={line} custom={0}><span className="hl">Aniq tashxis</span>, og‘riqsiz</motion.span></span>
+              <span className="h1-line"><motion.span variants={line} custom={1}>davolash — <span className="hl">ishonchli</span> tabassum.</motion.span></span>
             </h1>
-            <motion.p className="hero-lead" variants={rise} custom={0.45}>
-              Terapiya, ortopediya, jarrohlik, implantatsiya va ortodontiya — barchasi bir klinikada. Har bir qadamni oldindan ko‘rasiz va narxni oldindan bilasiz.
-            </motion.p>
-            <motion.div className="hero-actions" variants={rise} custom={0.55}>
-              <a className="btn btn-primary" href="#aloqa">Qabulga yozilish</a>
+            <motion.p className="lead" variants={rise} custom={0.6}>{clinic.slogan}</motion.p>
+            <motion.div className="cta-row" variants={rise} custom={0.75}>
+              <a className="btn btn-primary" href="#aloqa">Qabulga yozilish <Icon name="arrow" size={18} strokeWidth={2} /></a>
               <a className="btn btn-ghost" href="#xizmatlar">Xizmatlar va narxlar</a>
             </motion.div>
-            <motion.dl className="hero-facts" variants={rise} custom={0.65}>
-              <div><dt><CountUp to={10} run={ready} /> yil</dt><dd>amaliy tajriba</dd></div>
-              <div><dt><CountUp to={1000} run={ready} suffix="+" /></dt><dd>bemor</dd></div>
-              <div><dt><CountUp to={5} run={ready} /></dt><dd>yo‘nalish bir joyda</dd></div>
+            <motion.dl className="stat-strip" variants={rise} custom={0.9}>
+              <div className="stat"><dt className="n"><CountUp to={10} run={ready} />+</dt><dd className="l">yillik amaliy tajriba</dd></div>
+              <div className="stat"><dt className="n"><CountUp to={1000} run={ready} />+</dt><dd className="l">mamnun bemor</dd></div>
+              <div className="stat"><dt className="n">3D</dt><dd className="l">Raqamli diagnostika va rejalashtirish</dd></div>
+              <div className="stat"><dt className="n"><CountUp to={5} run={ready} /></dt><dd className="l">yo‘nalish bir klinikada</dd></div>
             </motion.dl>
           </motion.div>
 
-          <div className="hero-visual">
-            {/* Haqiqiy surat qo'yilganda: <Image src="/hero.jpg" alt="..." fill priority sizes="(max-width:860px) 100vw, 45vw" /> */}
-            <motion.div
-              className="hero-photo"
-              initial={{ clipPath: "inset(12% 12% 12% 12% round 32px)", opacity: 0 }}
-              animate={ready ? { clipPath: "inset(0% 0% 0% 0% round 32px)", opacity: 1 } : undefined}
-              transition={{ duration: 1.1, ease: EASE, delay: 0.15 }}
-            >
-              [Surat: shifokor bemor bilan — yorug‘ kabinet, tabiiy yorug‘lik]
-            </motion.div>
-            {/* Preloaderdagi rozetka shu yerga "qo'nadi": aylanib, kichrayib, xira fon belgisiga aylanadi. */}
-            <motion.div
-              className="hero-rosette-wrap"
-              initial={{ opacity: 0, scale: 1.6, rotate: -90 }}
-              animate={ready ? { opacity: 1, scale: 1, rotate: 0 } : undefined}
-              transition={{ duration: 1.6, ease: EASE }}
-            >
-              <Mark className="hero-rosette" />
-            </motion.div>
-            <motion.div
-              className="hero-badge"
-              initial={{ opacity: 0, x: -24 }}
-              animate={ready ? { opacity: 1, x: 0 } : undefined}
-              transition={{ type: "spring", stiffness: 260, damping: 22, delay: 0.85 }}
-            >
-              <div className="dot"><Icon name="clock" size={22} color={BLUE} /></div>
-              <div><b>Qabul vaqti</b><span>{clinic.hours.days}, [{clinic.hours.open}–{clinic.hours.close}]</span></div>
-            </motion.div>
-          </div>
+          <motion.div
+            className="hero-video"
+            initial={{ opacity: 0, y: 40, rotateY: -8 }}
+            animate={ready ? { opacity: 1, y: 0, rotateY: 0 } : undefined}
+            transition={{ duration: 1.2, ease: EASE, delay: 0.3 }}
+          >
+            <div className="video-halo" aria-hidden="true" />
+            {/* Video qo'yilganda: <video src="/hero.mp4" autoPlay muted loop playsInline /> */}
+            <div className="video-frame"><div className="video-ph">[Video yoki surat: klinikadagi ish jarayoni, vertikal 9:16]</div></div>
+            <span className="vid-caption"><span className="facet" aria-hidden="true" />Klinikamizda ish jarayoni</span>
+          </motion.div>
         </div>
+        <div className="hero-fade" aria-hidden="true" />
       </section>
     </MotionConfig>
   );

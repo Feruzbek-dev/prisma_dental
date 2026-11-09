@@ -6,7 +6,12 @@ import "@fontsource/onest/latin-600.css";
 import "@fontsource/onest/latin-700.css";
 import "@fontsource/onest/cyrillic-400.css";
 import "@fontsource/onest/cyrillic-600.css";
-import "@fontsource/jetbrains-mono/latin-500.css";
+import "@fontsource/geologica/latin-500.css";
+import "@fontsource/geologica/latin-600.css";
+import "@fontsource/geologica/latin-700.css";
+import "@fontsource/geologica/latin-800.css";
+import "@fontsource/geologica/cyrillic-600.css";
+import "@fontsource/geologica/cyrillic-700.css";
 import { SITE_URL, clinic } from "@/lib/site";
 import "./globals.css";
 
@@ -39,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0250B5",
+  themeColor: "#0B2654",
   colorScheme: "light",
   width: "device-width",
   initialScale: 1,
@@ -47,7 +52,7 @@ export const viewport: Viewport = {
 };
 
 // Preloader sessiyada bir marta: birinchi kirishda scroll'ni qulflaydi, keyingilarda darhol yashiradi.
-const preloaderBoot = `try{var h=document.documentElement;if(sessionStorage.getItem('pd-intro-seen')){h.classList.add('pl-skip')}else{h.classList.add('pl-lock')}}catch(e){document.documentElement.classList.add('pl-lock')}`;
+const preloaderBoot = `var h=document.documentElement;h.classList.add('js');try{if(sessionStorage.getItem('pd-intro-seen')){h.classList.add('pl-skip')}else{h.classList.add('pl-lock')}}catch(e){document.documentElement.classList.add('pl-lock')}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,94 +1,161 @@
-import { clinic, doctor, faq, nav, reviews, services, steps } from "@/lib/site";
+import { cases, clinic, doctor, faq, nav, reviews, services, steps } from "@/lib/site";
 import { Icon, Stars } from "./Icon";
 import { Brand, Mark } from "./Logo";
 import BookingForm from "./BookingForm";
 import FaqList from "./FaqList";
+import ServiceTabs from "./ServiceTabs";
+import OpenStatus from "./OpenStatus";
 
-const BLUE = "#0250B5";
+const address = `${clinic.address.district}, ${clinic.address.street}`;
+const hours = `${clinic.hours.days} · ${clinic.hours.open}–${clinic.hours.close}`;
+
+// Romb belgi — sarlavha va ro'yxatlardagi "prizma" qirrasi.
+export const Facet = () => <span className="facet" aria-hidden="true" />;
+
+function Head({ eyebrow, title, id, text, line = true }: { eyebrow: string; title: string; id: string; text?: string; line?: boolean }) {
+  return (
+    <div className="section-head reveal">
+      <p className="eyebrow"><Facet />{eyebrow}</p>
+      <h2 id={id}>{title}</h2>
+      {text && <p>{text}</p>}
+      {line && <div className="accent-line" />}
+    </div>
+  );
+}
 
 export function Header() {
   return (
     <header className="site-header">
-      <div className="wrap nav">
-        <Brand />
-        <nav className="nav-links" aria-label="Asosiy menyu">
-          {nav.map((n) => <a key={n.href} href={n.href}>{n.label}</a>)}
-        </nav>
-        <div className="nav-cta">
-          <a className="nav-phone" href={`tel:${clinic.phone}`}>{clinic.phoneDisplay}</a>
-          <a className="btn btn-primary" href="#aloqa">Qabulga yozilish</a>
+      <div className="wrap header-inner">
+        <div className="hcol left">
+          <a className="addr" href={clinic.mapUrl} target="_blank" rel="noopener noreferrer"><Icon name="pin" size={16} />{address}</a>
+          <a className="ph" href={`tel:${clinic.phone}`}><Icon name="phone" size={16} />{clinic.phoneDisplay}</a>
+        </div>
+        <div className="hcol center"><Brand /></div>
+        <div className="hcol right">
+          <div className="hours">{hours}</div>
+          <OpenStatus />
         </div>
       </div>
     </header>
   );
 }
 
-export function Trust() {
-  const items = [
-    { icon: "shield", label: "To‘liq sterillik" },
-    { icon: "heart", label: "Og‘riqsiz davolash" },
-    { icon: "receipt", label: "Oldindan aniq narx" },
-    { icon: "medal", label: "Ishga kafolat" },
-    { icon: "clock", label: "10 yillik tajriba" },
-    { icon: "sparkle", label: "5 yo‘nalish bir joyda" },
-  ] as const;
+export function About() {
   return (
-    <div className="trust">
-      <ul className="wrap trust-grid">
-        {items.map((t) => <li key={t.label} className="trust-item"><Icon name={t.icon} color={BLUE} />{t.label}</li>)}
-      </ul>
-    </div>
-  );
-}
-
-export function Services() {
-  return (
-    <section className="section" id="xizmatlar" aria-labelledby="services-title">
-      <div className="wrap">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Xizmatlar</p>
-            <h2 id="services-title">Bir klinikada — butun oila uchun</h2>
-          </div>
-          <p>Murakkab so‘zlarsiz: nima qilamiz, sizga nima beradi va qancha turadi.</p>
+    <section className="about" id="klinika" aria-labelledby="about-title">
+      <div className="wrap about-grid">
+        <div className="about-left reveal">
+          <p className="eyebrow"><Facet />Klinika</p>
+          <h2 className="about-title" id="about-title">{clinic.name}<span className="accent" /></h2>
         </div>
-        <div className="services">
-          {services.map((s) => (
-            <article className="service" key={s.slug} id={s.slug}>
-              <div className="ico"><Icon name={s.icon} size={26} color={BLUE} /></div>
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-              <ul>{s.items.map((i) => <li key={i}>{i}</li>)}</ul>
-              <div className="foot"><span className="price">{s.price}</span><a href="#aloqa">Yozilish →</a></div>
-            </article>
-          ))}
+        <div className="about-right reveal" style={{ transitionDelay: ".15s" }}>
+          <p className="about-body">
+            {clinic.name} — Toshkentdagi stomatologiya klinikasi. Terapiya, ortopediya, og‘iz bo‘shlig‘i jarrohligi, dental implantatsiya va ortodontiya — barchasi bir joyda.
+            Davolashdan oldin <strong>3D tomografiya</strong> va <strong>raqamli skaner</strong> yordamida aniq reja tuzamiz, uni siz bilan birga ko‘rib chiqamiz va <strong>narxni oldindan</strong> aytamiz.
+            Har bir bemorga shoshilmasdan, o‘z yaqinimizdek yondashamiz.
+          </p>
+          <div className="about-cta"><a className="btn btn-primary" href="#aloqa">Qabulga yozilish <Icon name="arrow" size={18} strokeWidth={2} /></a></div>
         </div>
       </div>
     </section>
   );
 }
 
-export function Digital() {
+export function Services() {
   return (
-    <section className="section digital" id="texnologiya" aria-labelledby="digital-title">
+    <section className="section section-white" id="xizmatlar" aria-labelledby="services-title">
       <div className="wrap">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Raqamli yondashuv</p>
-            <h2 id="digital-title">Davolashdan oldin natijani ko‘rasiz</h2>
+        <Head eyebrow="Xizmatlar" id="services-title" title="Bizning xizmatlarimiz" text="Oddiy davolashdan to‘liq tiklashgacha — barcha bosqichlar bir klinikada. Narxlar oldindan aniq." />
+        <ServiceTabs services={services} />
+
+        <div className="aftercare reveal">
+          <div className="ic"><Icon name="shield" size={30} /></div>
+          <div className="ac-body">
+            <span className="ac-badge">Bizning mas’uliyatimiz</span>
+            <h3>Ishimizga kafolat beramiz</h3>
+            <p>Bajarilgan ishga <strong>[X] yil kafolat</strong> beramiz. Davolashni boshlashdan oldin <strong>to‘liq narxni</strong> aytamiz va reja o‘zgarsa, avval siz bilan kelishamiz.</p>
+            <details className="ac-details">
+              <summary>Batafsil ma’lumot</summary>
+              <div className="ac-detail-body">
+                <p><strong>Implant qo‘yilgan bemorlar uchun:</strong> to‘g‘ri parvarish va muntazam ko‘rikda implant ko‘p yillar xizmat qiladi — nazorat ko‘riklarini rejalashtirib boramiz.</p>
+                <p><strong>Barcha bemorlar uchun:</strong> yiliga ikki marta professional tozalash va ko‘rik tavsiya qilinadi.</p>
+              </div>
+            </details>
           </div>
-          <p>Taxmin emas, aniq o‘lchov: har bir bemor uchun reja raqamli ma’lumot asosida tuziladi.</p>
+          <div className="ac-seal" aria-hidden="true">
+            <svg className="shield" viewBox="0 0 114 126" fill="none"><path d="M57 4 108 22v38c0 32-22 54-51 62C28 114 6 92 6 60V22z" stroke="currentColor" strokeWidth="2" /><path d="M57 14 98 29v31c0 26-17 44-41 51C33 104 16 86 16 60V29z" stroke="currentColor" strokeOpacity=".4" /></svg>
+            <span className="s-num">[X] yil</span><span className="s-lbl">kafolat</span>
+          </div>
         </div>
-        <ol className="steps">
-          {steps.map((s) => (
-            <li className="step" key={s.n}>
-              <span className="num">{s.n}</span>
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-              <span className="tag">{s.tag}</span>
+      </div>
+    </section>
+  );
+}
+
+export function Tech() {
+  const items = [
+    ...steps.map((s, i) => ({ icon: (["sparkle", "receipt", "check"] as const)[i], title: s.title, text: s.text, tag: s.tag })),
+    { icon: "shield" as const, title: "To‘liq sterillik", text: "Asboblar va kabinet qat’iy sterillik standartlari bo‘yicha tayyorlanadi.", tag: "" },
+  ];
+  const chips = ["To‘liq sterillik", "Og‘riqsiz davolash", "Oldindan aniq narx", "Ishga kafolat", "10 yillik tajriba", "5 yo‘nalish bir joyda", "3D tomografiya", "Raqamli skaner"];
+  return (
+    <section className="section tech" id="texnologiya" aria-labelledby="tech-title">
+      <div className="hero-grid-lines" aria-hidden="true" />
+      <div className="wrap">
+        <Head eyebrow="Texnologiya" id="tech-title" title="Davolashdan oldin natijani ko‘rasiz" text="Taxmin emas, aniq o‘lchov: har bir bemor uchun reja raqamli ma’lumot asosida tuziladi." line={false} />
+        <ul className="tech-grid stagger">
+          {items.map((t) => (
+            <li className="tech-item" key={t.title}>
+              <div className="ic"><Icon name={t.icon} size={24} /></div>
+              <h3>{t.title}</h3>
+              <p>{t.text}</p>
+              {t.tag && <span className="tag">{t.tag}</span>}
             </li>
           ))}
-        </ol>
+        </ul>
+        <div className="tech-logos reveal">
+          <p className="ll">Nega {clinic.name}</p>
+          <div className="marquee">
+            {/* Ikki nusxa — cheksiz aylanish uchun; ikkinchisi ekran o'quvchilardan yashirilgan */}
+            <div className="marquee-track">
+              {[...chips, ...chips].map((c, i) => <div className="logo-chip" key={i} aria-hidden={i >= chips.length || undefined}>{c}</div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function Cases() {
+  if (cases.length === 0) return null;
+  return (
+    <section className="section section-white" id="natijalar" aria-labelledby="cases-title">
+      <div className="wrap">
+        <Head eyebrow="Ishlarimiz" id="cases-title" title="Natijalar — oldin va keyin" text="Haqiqiy bemorlarimizning natijalari." />
+        <div className="cases-grid">
+          {cases.map((c, i) => (
+            <figure className="case reveal-3d" key={c.title} style={{ transitionDelay: `${(i % 2) * 0.1}s` }}>
+              <div className="case-pair">
+                {(["Oldin", "Keyin"] as const).map((tag) => {
+                  const src = tag === "Oldin" ? c.before : c.after;
+                  return (
+                    <div className="case-shot" key={tag}>
+                      <span className="case-tag">{tag}</span>
+                      {src ? <img src={src} alt={`${c.title} — ${tag.toLowerCase()}`} loading="lazy" /> : <div className="case-ph">[Surat: {tag.toLowerCase()}]</div>}
+                    </div>
+                  );
+                })}
+              </div>
+              <figcaption><Facet />{c.title}</figcaption>
+            </figure>
+          ))}
+        </div>
+        <div className="cases-more reveal">
+          <p>Ko‘proq natijalar bilan tanishmoqchimisiz?</p>
+          <a className="btn btn-outline" href={clinic.instagram} target="_blank" rel="noopener noreferrer">Instagram sahifamiz →</a>
+        </div>
       </div>
     </section>
   );
@@ -96,21 +163,29 @@ export function Digital() {
 
 export function Doctor() {
   return (
-    <section className="section" id="shifokor" aria-labelledby="doctor-title">
-      <div className="wrap doctor">
-        <div className="doctor-photo">[Surat: shifokor portreti — oq xalatda, kameraga qaragan]</div>
-        <div className="doctor-copy">
-          <p className="eyebrow">Shifokorimiz bilan tanishing</p>
-          <h2 id="doctor-title">Dr. {doctor.name}</h2>
-          <p className="doctor-role">{doctor.title}</p>
-          <blockquote className="doctor-quote">“{doctor.quote}”</blockquote>
-          <dl className="hero-facts doctor-stats">
-            {doctor.stats.map((s) => <div key={s.label}><dt>{s.value}</dt><dd>{s.label}</dd></div>)}
-          </dl>
-          <ul className="creds">
-            {doctor.creds.map((c) => <li key={c}><Icon name="check" size={20} strokeWidth={2.2} color={BLUE} />{c}</li>)}
-          </ul>
-          <div><a className="btn btn-primary" href="#aloqa">Shifokor qabuliga yozilish</a></div>
+    <section className="section section-paper" id="shifokor" aria-labelledby="doctor-title">
+      <div className="wrap">
+        <Head eyebrow="Jamoa" id="doctor-title" title="Sizni kim davolaydi" />
+        <div className="team">
+          <article className="doc-card reveal-3d">
+            {/* Haqiqiy surat: <img className="doc-photo" src="/doctor.jpg" alt={doctor.fullName} /> */}
+            <div className="doc-photo-wrap"><div className="doc-photo">[Surat: shifokor portreti — oq xalatda, kameraga qaragan]</div></div>
+            <div className="doc-body">
+              <h3 className="doc-name">Dr. {doctor.name}</h3>
+              <p className="doc-spec">{doctor.title}</p>
+              <p className="doc-exp"><Facet />{doctor.stats[0].value} tajriba</p>
+            </div>
+          </article>
+          <div className="doc-detail reveal" style={{ transitionDelay: ".15s" }}>
+            <blockquote className="doctor-quote">“{doctor.quote}”</blockquote>
+            <dl className="doc-stats">
+              {doctor.stats.map((s) => <div key={s.label}><dt>{s.value}</dt><dd>{s.label}</dd></div>)}
+            </dl>
+            <ul className="creds">
+              {doctor.creds.map((c) => <li key={c}><Facet />{c}</li>)}
+            </ul>
+            <div><a className="btn btn-primary" href="#aloqa">Shifokor qabuliga yozilish <Icon name="arrow" size={18} strokeWidth={2} /></a></div>
+          </div>
         </div>
       </div>
     </section>
@@ -120,19 +195,10 @@ export function Doctor() {
 export function Reviews() {
   if (reviews.length === 0) return null;
   return (
-    <section className="section reviews-bg" id="sharhlar" aria-labelledby="reviews-title">
+    <section className="section section-white" id="sharhlar" aria-labelledby="reviews-title">
       <div className="wrap">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Bemorlarimiz fikri</p>
-            <h2 id="reviews-title">Bizga ishongan bemorlar nima deydi</h2>
-          </div>
-          <div className="rating">
-            <div className="score">[4.9]</div>
-            <div><Stars /><span>Google Maps’da [X] ta sharh</span></div>
-          </div>
-        </div>
-        <div className="reviews">
+        <Head eyebrow="Bemorlarimiz fikri" id="reviews-title" title="Bizga ishongan bemorlar nima deydi" />
+        <div className="reviews stagger">
           {reviews.map((r, i) => (
             <figure className="review" key={i}>
               <Stars />
@@ -148,39 +214,42 @@ export function Reviews() {
 
 export function Faq() {
   return (
-    <section className="section" id="savollar" aria-labelledby="faq-title">
+    <section className="section section-paper" id="savollar" aria-labelledby="faq-title">
       <div className="wrap faq">
-        <div>
-          <p className="eyebrow">Savol-javob</p>
-          <h2 id="faq-title" className="faq-title">Ko‘p beriladigan savollar</h2>
-        </div>
-        <FaqList items={faq} />
+        <Head eyebrow="Savol-javob" id="faq-title" title="Ko‘p beriladigan savollar" />
+        <div className="reveal"><FaqList items={faq} /></div>
       </div>
     </section>
   );
 }
 
 export function Booking() {
+  const info = [
+    { icon: "pin" as const, label: "Manzil", value: `${clinic.address.city} sh., ${address}`, href: clinic.mapUrl, ext: true },
+    { icon: "phone" as const, label: "Telefon", value: clinic.phoneDisplay, href: `tel:${clinic.phone}` },
+    { icon: "clock" as const, label: "Ish vaqti", value: hours },
+    { icon: "telegram" as const, label: "Telegram", value: "Telegram orqali yozish", href: clinic.telegram, ext: true },
+    { icon: "instagram" as const, label: "Instagram", value: "Instagram sahifamiz", href: clinic.instagram, ext: true },
+  ];
   return (
-    <section className="section booking-sec" id="aloqa" aria-labelledby="booking-title">
+    <section className="section section-white" id="aloqa" aria-labelledby="booking-title">
       <div className="wrap">
-        <div className="booking">
-          <Mark className="booking-rosette" />
-          <div className="booking-info">
-            <p className="eyebrow">Qabulga yozilish</p>
-            <h2 id="booking-title">Tabassumingiz uchun birinchi qadam</h2>
-            <p className="booking-lead">Formani to‘ldiring — administratorimiz qo‘ng‘iroq qilib, sizga qulay kun va vaqtni kelishib oladi.</p>
-            <a className="call-card" href={`tel:${clinic.phone}`}>
-              <span className="call-ico"><Icon name="phone" size={22} /></span>
-              <span><small>Yoki hoziroq qo‘ng‘iroq qiling</small><strong>{clinic.phoneDisplay}</strong></span>
-            </a>
-            <address className="booking-meta">
-              <div><Icon name="pin" size={20} /><span><b>Manzil</b>{clinic.address.city} sh., {clinic.address.district}, {clinic.address.street}</span></div>
-              <div><Icon name="clock" size={20} /><span><b>Ish vaqti</b>{clinic.hours.days}, [{clinic.hours.open} – {clinic.hours.close}]</span></div>
-            </address>
-            <a className="map-link" href={clinic.mapUrl} target="_blank" rel="noopener noreferrer">Xaritada ko‘rish →</a>
-          </div>
-          <BookingForm />
+        <Head eyebrow="Aloqa" id="booking-title" title="Qabulga yozilish" text="Ma’lumotlaringizni qoldiring — administratorimiz qo‘ng‘iroq qilib, sizga qulay kun va vaqtni kelishib oladi." />
+        <div className="contact-grid">
+          <address className="contact-info stagger">
+            {info.map((c) => (
+              <div className="ci-item" key={c.label}>
+                <span className="ic"><Icon name={c.icon} size={20} /></span>
+                <div>
+                  <div className="lbl">{c.label}</div>
+                  {c.href
+                    ? <a className="val" href={c.href} {...(c.ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}>{c.value}</a>
+                    : <span className="val">{c.value}</span>}
+                </div>
+              </div>
+            ))}
+          </address>
+          <div className="reveal-3d"><BookingForm /></div>
         </div>
       </div>
     </section>
@@ -192,14 +261,32 @@ export function Footer() {
     <footer className="footer">
       <div className="wrap">
         <div className="footer-top">
-          <Brand label="Prisma Dental" />
-          <div className="footer-cols">
-            <div><b>Klinika</b><a href="#xizmatlar">Xizmatlar</a><a href="#texnologiya">Texnologiya</a><a href="#shifokor">Shifokor</a></div>
-            <div><b>Bog‘lanish</b><a href={`tel:${clinic.phone}`}>{clinic.phoneDisplay}</a><a href={clinic.telegram} rel="noopener">Telegram</a><a href={clinic.instagram} rel="noopener">Instagram</a></div>
+          <div className="footer-brand">
+            <Brand label={clinic.name} />
+            <p>Terapiya, ortopediya, jarrohlik, implantatsiya va ortodontiya. Raqamli stomatologiya, {clinic.city}.</p>
+            <div className="footer-social">
+              <a href={clinic.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Icon name="instagram" size={18} /></a>
+              <a href={clinic.telegram} target="_blank" rel="noopener noreferrer" aria-label="Telegram"><Icon name="telegram" size={18} /></a>
+              <a href={`tel:${clinic.phone}`} aria-label="Qo‘ng‘iroq qilish"><Icon name="phone" size={18} /></a>
+            </div>
+          </div>
+          <nav className="footer-col" aria-label="Bo‘limlar">
+            <h4>Bo‘limlar</h4>
+            {nav.map((n) => <a key={n.href} href={n.href}>{n.label}</a>)}
+          </nav>
+          <div className="footer-col">
+            <h4>Aloqa</h4>
+            <a href={clinic.mapUrl} target="_blank" rel="noopener noreferrer">{clinic.address.city} sh.,<br />{address}</a>
+            <a href={`tel:${clinic.phone}`}>{clinic.phoneDisplay}</a>
+            <span className="fi">{hours}</span>
           </div>
         </div>
-        <div className="footer-bottom"><span>© {new Date().getFullYear()} Prisma Dental · Toshkent</span><span>[Litsenziya raqami]</span></div>
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} {clinic.name}. Barcha huquqlar himoyalangan.</span>
+          <span>[Litsenziya raqami] · {clinic.city}, O‘zbekiston</span>
+        </div>
       </div>
+      <Mark className="footer-rosette" />
     </footer>
   );
 }
